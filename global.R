@@ -2,26 +2,40 @@ library(dplyr)
 library(readr)
 library(DescTools)
 
-dat <- read_csv("airbnb_2018.csv",
-                col_types = cols(
-                  `Start Date` = col_date(format = c("%m/%d/%y")))) %>% 
-  filter(Type == "Reservation") %>% 
-  select(`Start Date`, Nights, Listing) %>% 
-  distinct() %>% 
-  mutate(`End Date` = `Start Date`+(Nights-1)) %>% 
-  filter(Listing == "Cozy private room near airport with queen bed")  
+readFile <- function(inputfile){
+  read_csv(inputfile$datapath,
+           col_types = cols(
+             `Start Date` = col_date(format = c("%m/%d/%y")))) 
+}
 
-  
-dates <- sapply(dat$`Start Date`, function(x){
-  foo <- filter(dat, `Start Date`==x)
-  bar <- seq(as.Date(foo$`Start Date`), as.Date(foo$`End Date`), by = "days")
-  bar <- as.Date(bar)
-})
+getListings <- function(dat){
+  unique(dat$Listing)
+}
 
-dates <- do.call("c", dates)
 
-denom.dates <- seq(as.Date("2018-01-20"),as.Date("2018-02-18"), by = "days")
-dates.2 <- dates[dates %in% denom.dates]
+processData <- function(dat, selected_listing){
+  print(selected_listing)
+  dat %>% 
+    filter(Type == "Reservation") %>% 
+    select(`Start Date`, Nights, Listing) %>% 
+    filter(Listing == selected_listing) %>%
+    distinct() %>% 
+    mutate(`End Date` = `Start Date`+(Nights-1))
+}
 
-perc.occ <- (length(dates.2)/length(denom.dates))*100
+calculateDateOverlap <- function(beginning, end, dat){
+  dates <- sapply(dat$`Start Date`, function(x){
+    foo <- filter(dat, `Start Date`==x)
+    bar <- seq(as.Date(foo$`Start Date`), as.Date(foo$`End Date`), by = "days")
+    bar <- as.Date(bar)
+    })
+
+  dates <- do.call("c", dates)
+  denom.dates <- seq(as.Date(beginning),as.Date(end), by = "days")
+  dates.overlap <- dates[dates %in% denom.dates]
+  perc.occ <- signif((length(dates.overlap)/length(denom.dates))*100,3)
+
+  c(length(denom.dates), length(dates.overlap), perc.occ)
+}
+
 
