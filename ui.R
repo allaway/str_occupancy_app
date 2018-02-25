@@ -1,7 +1,8 @@
 ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
-      h5("Upload your Transactions file from Air. This can be obtained on the Airbnb Transaction History page by clicking 'export csv.'"),
+      p("Upload your Transactions file from Airbnb."), 
+      p("This can be obtained on the Airbnb Transaction History page by clicking 'export csv.'"),
       fileInput("data", "Upload STR CSV",
                 multiple = FALSE,
                 accept = c("text/csv",
@@ -17,9 +18,10 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      textOutput("length"),
-      textOutput("overlap"),
-      textOutput("percentoccupancy")
+      fluidRow(h4(textOutput("length"))),
+      fluidRow(h4(textOutput("overlap"))),
+      fluidRow(h4(textOutput("percentoccupancy")))
+             
     )
   )
 )

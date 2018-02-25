@@ -1,6 +1,5 @@
 library(dplyr)
 library(readr)
-library(DescTools)
 
 readFile <- function(inputfile){
   read_csv(inputfile$datapath,
@@ -11,7 +10,6 @@ readFile <- function(inputfile){
 getListings <- function(dat){
   unique(dat$Listing)
 }
-
 
 processData <- function(dat, selected_listing){
   print(selected_listing)
